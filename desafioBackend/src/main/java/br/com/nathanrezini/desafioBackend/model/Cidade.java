@@ -15,7 +15,6 @@ public class Cidade {
 	private String estado;
 
 	public Cidade() {
-
 	}
 
 	public Cidade(String nome, String estado) {

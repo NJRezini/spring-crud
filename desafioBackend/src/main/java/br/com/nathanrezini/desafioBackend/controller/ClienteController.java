@@ -38,59 +38,62 @@ public class ClienteController {
 
 	@Autowired
 	private ClienteRepository clienteRepository;
-	
+
 	@Autowired
 	private CidadeRepository cidadeRepository;
-	
+
 	@GetMapping
 	@Cacheable(value = "listaDeClientes")
 	public Page<ClienteDto> listarClientes(@RequestParam(required = false) String nomeCliente,
 			@RequestParam(required = false) String nomeEstado,
 			@PageableDefault(sort = "nome", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {
 
-		if (nomeCliente == null ) {
-			Page<Cliente> clientes = clienteRepository.findAll(paginacao);
+		if (nomeCliente != null) {
+			Page<Cliente> clientes = clienteRepository.findByNome(nomeCliente, paginacao);
 			return ClienteDto.converter(clientes);
 		} else {
-			Page<Cliente> clientes = clienteRepository.findByNome(nomeCliente, paginacao);
+			Page<Cliente> clientes = clienteRepository.findAll(paginacao);
 			return ClienteDto.converter(clientes);
 		}
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<ClienteDto> listarClientePorId(@PathVariable Long id) {
 		Optional<Cliente> cliente = clienteRepository.findById(id);
+
 		if (cliente.isPresent()) {
 			return ResponseEntity.ok(new ClienteDto(cliente.get()));
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
 	@Transactional
 	@CacheEvict(value = "listaDeClientes", allEntries = true)
-	public ResponseEntity<ClienteDto> cadastrarCliente(@RequestBody @Valid ClienteForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<ClienteDto> cadastrarCliente(@RequestBody @Valid ClienteForm form,
+			UriComponentsBuilder uriBuilder) {
 		Cliente cliente = form.converter(cidadeRepository);
 		clienteRepository.save(cliente);
 
-		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(cliente.getId()).toUri();
+		URI uri = uriBuilder.path("/clientes/{id}").buildAndExpand(cliente.getId()).toUri();
 		return ResponseEntity.created(uri).body(new ClienteDto(cliente));
 	}
-	
+
 	@PutMapping("/{id}")
 	@Transactional
 	@CacheEvict(value = "listaDeTopicos", allEntries = true)
-	public ResponseEntity<ClienteDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoClienteForm form) {
+	public ResponseEntity<ClienteDto> atualizarCliente(@PathVariable Long id,
+			@RequestBody @Valid AtualizacaoClienteForm form) {
 		Optional<Cliente> optional = clienteRepository.findById(id);
 		if (optional.isPresent()) {
-			Cliente cliente = form.atualizar(id, clienteRepository);
+			Cliente cliente = form.atualizarNome(id, clienteRepository);
 			return ResponseEntity.ok(new ClienteDto(cliente));
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	@Transactional
 	@CacheEvict(value = "listaDeClientes", allEntries = true)
@@ -100,7 +103,7 @@ public class ClienteController {
 			clienteRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
 }

@@ -27,7 +27,7 @@ public class CidadeDto {
 	public String getEstado() {
 		return estado;
 	}
-	
+
 	public static Page<CidadeDto> converter(Page<Cidade> cidade) {
 		return cidade.map(CidadeDto::new);
 	}

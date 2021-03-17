@@ -39,14 +39,14 @@ public class CidadeController {
 			@RequestParam(required = false) String nomeEstado,
 			@PageableDefault(sort = "nome", direction = Direction.DESC, page = 0, size = 10) Pageable paginacao) {
 
-		if (nomeCidade == null && nomeEstado == null) {
-			Page<Cidade> cidades = cidadeRepository.findAll(paginacao);
+		if (nomeCidade != null) {
+			Page<Cidade> cidades = cidadeRepository.findByNome(nomeCidade, paginacao);
 			return CidadeDto.converter(cidades);
 		} else if (nomeEstado != null) {
 			Page<Cidade> cidades = cidadeRepository.findByEstado(nomeEstado, paginacao);
 			return CidadeDto.converter(cidades);
 		} else {
-			Page<Cidade> cidades = cidadeRepository.findByNome(nomeCidade, paginacao);
+			Page<Cidade> cidades = cidadeRepository.findAll(paginacao);
 			return CidadeDto.converter(cidades);
 		}
 	}
@@ -58,7 +58,7 @@ public class CidadeController {
 		Cidade cidade = form.converter();
 		cidadeRepository.save(cidade);
 
-		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(cidade.getId()).toUri();
+		URI uri = uriBuilder.path("/cidade/{id}").buildAndExpand(cidade.getId()).toUri();
 		return ResponseEntity.created(uri).body(new CidadeDto(cidade));
 	}
 

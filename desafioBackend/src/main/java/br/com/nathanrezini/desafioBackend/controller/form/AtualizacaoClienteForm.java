@@ -19,7 +19,7 @@ public class AtualizacaoClienteForm {
 		this.nome = nome;
 	}
 
-	public Cliente atualizar(Long id, ClienteRepository clienteRepository) {
+	public Cliente atualizarNome(Long id, ClienteRepository clienteRepository) {
 		Cliente cliente = clienteRepository.getOne(id);
 
 		cliente.setNome(this.nome);

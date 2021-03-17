@@ -22,18 +22,17 @@ public class Cliente {
 	private Date dataNascimento;
 	@OneToOne
 	private Cidade cidade;
-	
+
 	public Cliente() {
-		
+
 	}
-	
+
 	public Cliente(String nome, String sexo, Date dataNascimento, Cidade cidade) {
 		this.nome = nome;
 		this.sexo = sexo;
 		this.dataNascimento = dataNascimento;
 		this.cidade = cidade;
 	}
-	
 
 	@Override
 	public int hashCode() {
